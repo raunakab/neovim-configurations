@@ -30,7 +30,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         set('gd', 'definition()')
         set('gr', 'references()')
-        set('<leader>k', 'hover()')
+        set('<leader>ck', 'hover()')
         set('<leader>r', 'rename()', true)
         set('<leader>cf', 'format({async = true})')
     end,
