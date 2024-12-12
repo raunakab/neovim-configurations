@@ -6,7 +6,8 @@ function both(alias, original)
     vim.keymap.set('v', alias, original)
 end
 
-both('L', 'g_')
+vim.keymap.set('n', 'L', '$')
+vim.keymap.set('v', 'L', '$h')
 both('H', '^')
 both('{', 'gg')
 both('}', 'G')
