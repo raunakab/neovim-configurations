@@ -1,6 +1,15 @@
+require('illuminate').configure({
+    should_enable = function()
+        return false
+        -- local mode = vim.api.nvim_get_mode().mode
+        -- return mode == "v" or mode == "V" or mode == "\22"
+    end,
+})
+
 -- colours
 
 vim.cmd.colorscheme('ayu')
+vim.api.nvim_set_hl(0, "Visual", { bg = "#884444", fg = "NONE" })
 
 -- harpoon
 
@@ -21,4 +30,3 @@ vim.keymap.set('n', '<leader>ps', builtin.grep_string)
 -- undotree
 
 vim.keymap.set('n', '<leader>cu', vim.cmd.UndotreeToggle)
-
