@@ -2,8 +2,8 @@ vim.g.mapleader = ' '
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
 
 function both(alias, original)
-	vim.keymap.set('n', alias, original)
-	vim.keymap.set('v', alias, original)
+    vim.keymap.set('n', alias, original)
+    vim.keymap.set('v', alias, original)
 end
 
 both('L', 'g_')
@@ -11,6 +11,8 @@ both('H', '^')
 both('{', 'gg')
 both('}', 'G')
 both('m', '%')
+both('<C-j>', '<C-e>')
+both('<C-k>', '<C-y>')
 
 vim.keymap.set('n', 'o', 'o<Esc>')
 vim.keymap.set('n', 'O', 'O<Esc>')
@@ -29,3 +31,4 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
+vim.o.scrolloff = 20
