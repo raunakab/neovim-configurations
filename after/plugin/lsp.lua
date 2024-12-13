@@ -1,6 +1,7 @@
 local lsp_config = require('lspconfig')
 local cmp = require('cmp_nvim_lsp')
 local util = require('lspconfig.util')
+local utils = require('utils')
 
 vim.opt.signcolumn = 'yes'
 
@@ -28,12 +29,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
             end
         end
 
-        set('gd', 'definition()')
-        set('gr', 'references()')
-        set('gs', 'document_symbol()')
-        set('<leader>ck', 'hover()')
-        set('<leader>r', 'rename()', true)
-        set('<leader>cf', 'format({async = true})')
+        set(utils.goto_scope('d'), 'definition()')
+        set(utils.goto_scope('r'), 'references()')
+        set(utils.goto_scope('s'), 'document_symbol()')
+        set(utils.goto_scope('k'), 'hover()')
+        set(utils.code_scope('r'), 'rename()', true)
+        set(utils.code_scope('f'), 'format({async = true})')
     end,
 })
 
