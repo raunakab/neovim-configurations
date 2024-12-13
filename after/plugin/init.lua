@@ -1,4 +1,4 @@
--- noice
+-- lualine
 
 require('lualine').setup()
 
