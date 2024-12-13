@@ -32,3 +32,8 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.o.scrolloff = 20
+
+vim.keymap.set('n', utils.window_scope('L'), function() vim.cmd("vsplit") end)
+vim.keymap.set('n', utils.window_scope('J'), function() vim.cmd("split") end)
+vim.keymap.set('n', utils.window_scope('x'), function() vim.cmd("close") end)
+vim.keymap.set('n', utils.window_scope('X'), function() vim.cmd("only") end)

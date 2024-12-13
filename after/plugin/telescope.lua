@@ -1,6 +1,8 @@
 -- # Overview
 -- Allows you to easily access various files across your open project.
 
+require("telescope").load_extension("scope")
+
 local utils = require('utils')
 local builtin = require('telescope.builtin')
 

@@ -14,7 +14,7 @@ end
 -- * adding to harpoon list
 -- * jumping to next file in harpoon list
 -- * jumping to previous file in harpoon list
-U.harpoon_scope = alias('h')
+U.harpoon_scope = alias('f')
 
 -- For helping with windowing.
 --
@@ -45,7 +45,7 @@ U.code_scope = alias('c')
 --
 -- Supports:
 -- * listing all open buffers
-U.buffer_scope = alias('b')
+U.buffer_scope = alias('s')
 
 -- For "going to" symbols (using the lsp).
 --

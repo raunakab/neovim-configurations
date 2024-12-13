@@ -27,4 +27,12 @@ return require('packer').startup(function(use)
         'nvim-lualine/lualine.nvim',
         requires = { 'nvim-tree/nvim-web-devicons', opt = true }
     }
+    use {
+        'romgrk/barbar.nvim',
+        requires = {
+            'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+            'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
+        },
+    }
+    use 'tiagovla/scope.nvim'
 end)
