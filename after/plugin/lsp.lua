@@ -50,3 +50,4 @@ lsp_config.ruff.setup({
         settings = {},
     },
 })
+lsp_config.taplo.setup({})
