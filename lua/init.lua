@@ -1,7 +1,9 @@
 local utils = require('utils')
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 vim.g.mapleader = ' '
-vim.keymap.set('n', utils.project_scope('v'), vim.cmd.Ex)
 
 function both(alias, original)
     vim.keymap.set('n', alias, original)

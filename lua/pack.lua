@@ -30,9 +30,15 @@ return require('packer').startup(function(use)
     use {
         'romgrk/barbar.nvim',
         requires = {
-            'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
-            'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
+            'nvim-tree/nvim-web-devicons',
+            'lewis6991/gitsigns.nvim',
         },
     }
     use 'tiagovla/scope.nvim'
+    use {
+        'nvim-tree/nvim-tree.lua',
+        requires = {
+            'nvim-tree/nvim-web-devicons',
+        },
+    }
 end)

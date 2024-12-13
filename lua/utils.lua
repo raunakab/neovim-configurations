@@ -23,6 +23,8 @@ U.harpoon_scope = alias('f')
 -- * jumping to the right window
 -- * jumping to the upper window
 -- * jumping to the lower window
+-- * creating window to the right
+-- * creating window underneath
 U.window_scope = alias('w')
 
 -- For insights into this project's files.
@@ -45,6 +47,8 @@ U.code_scope = alias('c')
 --
 -- Supports:
 -- * listing all open buffers
+-- * navigating to next buffer
+-- * navigating to previous buffer
 U.buffer_scope = alias('s')
 
 -- For "going to" symbols (using the lsp).
