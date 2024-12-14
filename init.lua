@@ -7,58 +7,67 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Add plugins
 require('lazy').setup({
-    -- File tree
+    -- file tree
     'nvim-tree/nvim-tree.lua',
 
-    -- Git commands in nvim
+    -- tabs
+    {
+        'romgrk/barbar.nvim',
+        dependencies = {
+            'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
+            'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+        },
+    },
+
+    -- git commands in nvim
     'tpope/vim-fugitive',
 
-    -- Fugitive-companion to interact with github
+    -- fugitive-companion to interact with github
     'tpope/vim-rhubarb',
 
     -- "gc" to comment visual regions/lines
     'numToStr/Comment.nvim',
 
-    -- More modern netrw
+    -- more modern netrw
     'stevearc/oil.nvim',
 
-    -- Colorscheme
+    -- colorscheme
     'Luxed/ayu-vim',
 
-    -- Fancier statusline
+    -- fancier statusline
     'nvim-lualine/lualine.nvim',
 
-    -- Add indentation guides even on blank lines
+    -- add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
 
-    -- Add git related info in the signs columns and popups
+    -- add git related info in the signs columns and popups
     'lewis6991/gitsigns.nvim',
 
-    -- Highlight, edit, and navigate code
+    -- highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
 
-    -- Additional textobjects for treesitter
+    -- additional textobjects for treesitter
     'nvim-treesitter/nvim-treesitter-textobjects',
 
-    -- Collection of configurations for built-in LSP client
+    -- collection of configurations for built-in LSP client
     'neovim/nvim-lspconfig',
 
-    -- Automatically install LSPs to stdpath for neovim
+    -- automatically install LSPs to stdpath for neovim
     'williamboman/mason.nvim',
 
     -- ibid
     'williamboman/mason-lspconfig.nvim',
 
-    -- Lua language server configuration for nvim
+    -- lua language server configuration for nvim
     'folke/neodev.nvim',
 
-    -- Autocompletion
+    -- autocompletion
     {
         'hrsh7th/nvim-cmp',
         dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
     },
 
-    -- Fuzzy Finder (files, lsp, etc)
+    -- fuzzy Finder (files, lsp, etc)
     { 'nvim-telescope/telescope.nvim', version = '*', dependencies = { 'nvim-lua/plenary.nvim' } },
     {
         'nvim-telescope/telescope-fzf-native.nvim',
@@ -78,7 +87,7 @@ local project_explorer_scope = alias('x')('')
 local project_explorer_collapsed_scope = alias('c')('')
 local project_files_scope = alias('f')('')
 local buffer_list_buffers_scope = alias('<space>')('')
-local buffer_scope = alias('a')
+local buffer_scope = alias('b')
 local diagnostics_show_scope = alias('e')('')
 local diagnostics_show_all_scope = alias('E')('')
 local hover_scope = alias('k')('')
@@ -126,10 +135,10 @@ local project_explorer_collapsed = project_explorer_collapsed_scope
 local project_files = project_files_scope
 
 local buffer_list_buffers = buffer_list_buffers_scope
-local buffer_close_buffer = buffer_scope('x')
-local buffer_close_buffer_forced = buffer_scope('X')
-local buffer_next_buffer = buffer_scope('l')
-local buffer_previous_buffer = buffer_scope('h')
+local buffer_close_buffer = buffer_scope('q')
+local buffer_close_buffer_forced = buffer_scope('Q')
+local buffer_next_buffer = '[b'
+local buffer_previous_buffer = ']b'
 
 local search_buffer = search_scope('b')
 local search_project = search_scope('p')
@@ -192,10 +201,10 @@ vim.keymap.set({ 'n', 'v' }, move_up, "v:count == 0 ? 'gk' : 'k'", { expr = true
 vim.keymap.set({ 'n', 'v' }, move_down, "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- buffers
-vim.keymap.set('n', buffer_close_buffer, function () vim.cmd('bd') end)
-vim.keymap.set('n', buffer_close_buffer_forced, function () vim.cmd('bd!') end)
-vim.keymap.set('n', buffer_next_buffer, function () vim.cmd('bn') end)
-vim.keymap.set('n', buffer_previous_buffer, function () vim.cmd('bp') end)
+vim.keymap.set('n', buffer_close_buffer, function() vim.cmd('bd') end)
+vim.keymap.set('n', buffer_close_buffer_forced, function() vim.cmd('bd!') end)
+vim.keymap.set('n', buffer_next_buffer, function() vim.cmd('bn') end)
+vim.keymap.set('n', buffer_previous_buffer, function() vim.cmd('bp') end)
 
 -- misc
 vim.opt.tabstop = 4
@@ -249,6 +258,17 @@ require('nvim-tree').setup({
 })
 vim.keymap.set({ 'n', 'v' }, project_explorer, function() vim.cmd('NvimTreeToggle') end)
 vim.keymap.set({ 'n', 'v' }, project_explorer_collapsed, function() vim.cmd('NvimTreeCollapse') end)
+
+-- tabs
+require('barbar').setup({
+    icons = {
+        gitsigns = {
+            added = { enabled = true, icon = '+' },
+            changed = { enabled = true, icon = '~' },
+            deleted = { enabled = true, icon = '-' },
+        },
+    },
+})
 
 -- statusbar
 require('lualine').setup {
