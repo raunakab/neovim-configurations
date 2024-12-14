@@ -417,6 +417,11 @@ require('mason-lspconfig').setup()
 local lspconfig = require 'lspconfig'
 local function on_attach(_, bufnr)
     local attach_opts = { silent = true, buffer = bufnr }
+    if vim.lsp.inlay_hint then
+        vim.lsp.inlay_hint.enable(true, { 0 })
+    end
+    -- vim.lsp.buf.inlay_hint(bufnr, true)
+
     -- vim.keymap.set({ 'n', 'v' }, goto_scope('i'), vim.lsp.buf.implementation, attach_opts)
     -- vim.keymap.set({ 'n', 'v' }, goto_scope('D'), vim.lsp.buf.declaration, attach_opts)
     vim.keymap.set({ 'n', 'v' }, goto_definition, vim.lsp.buf.definition, attach_opts)
