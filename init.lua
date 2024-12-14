@@ -86,6 +86,7 @@ local search_scope = alias('s')
 local project_explorer_scope = alias('x')('')
 local project_explorer_collapsed_scope = alias('c')('')
 local project_files_scope = alias('f')('')
+local project_git_files_scope = alias('g')('')
 local buffer_list_buffers_scope = alias('<space>')('')
 local buffer_scope = alias('b')
 local diagnostics_show_scope = alias('e')('')
@@ -133,6 +134,7 @@ local project_dir = '-'
 local project_explorer = project_explorer_scope
 local project_explorer_collapsed = project_explorer_collapsed_scope
 local project_files = project_files_scope
+local project_git_files = project_git_files_scope
 
 local buffer_list_buffers = buffer_list_buffers_scope
 local buffer_close_buffer = buffer_scope('q')
@@ -327,6 +329,7 @@ require('telescope').load_extension('fzf')
 local telescope_builtin = require('telescope.builtin')
 vim.keymap.set('n', buffer_list_buffers, function() telescope_builtin.buffers { sort_lastused = true } end)
 vim.keymap.set('n', project_files, function() telescope_builtin.find_files { previewer = true } end)
+vim.keymap.set('n', project_git_files, function() telescope_builtin.git_files { previewer = true } end)
 vim.keymap.set('n', search_buffer, function() telescope_builtin.current_buffer_fuzzy_find() end)
 vim.keymap.set('n', search_project, function() telescope_builtin.live_grep() end)
 -- vim.keymap.set('n', '<leader>sh', function() require('telescope.builtin').help_tags() end)
@@ -443,7 +446,7 @@ end
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 -- enable language servers
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'ts_ls', 'taplo' }
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'ts_ls', 'taplo', 'yamlls', 'ruff' }
 for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
         on_attach = on_attach,
@@ -467,7 +470,6 @@ lspconfig.lua_ls.setup {
 
 -- nvim-cmp setup
 local cmp = require 'cmp'
-
 local luasnip = require 'luasnip'
 luasnip.config.setup()
 cmp.setup {
