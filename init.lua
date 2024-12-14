@@ -70,8 +70,15 @@ local function alias(scope)
     return function(command) return string.format("%s%s", scoped, command) end
 end
 local window_scope = alias('w')
-local code_scope = alias('e')
-local telescope_scope = alias('s')
+local search_scope = alias('s')
+local project_files_scope = alias('f')('')
+local project_buffer_scope = alias('<space>')('')
+local diagnostics_show_scope = alias('e')('')
+local diagnostics_show_all_scope = alias('E')('')
+local hover_scope = alias('k')('')
+local hover_more_info_scope = alias('K')('')
+local rename_scope = alias('r')('')
+local code_format_scope = alias('m')('')
 local function goto_scope(scope) return string.format("g%s", scope) end
 
 local move_up = 'k'
@@ -97,8 +104,39 @@ local window_new_bottom = window_scope('J')
 local window_close = window_scope('q')
 local window_close_others = window_scope('Q')
 
-local code_jump_previous_mark = code_scope('h')
-local code_jump_next_mark = code_scope('l')
+local code_previous_location = '[c'
+local code_next_location = ']c'
+local code_hover = hover_scope
+local code_hover_more_info = hover_more_info_scope
+local code_rename = rename_scope
+local code_format = code_format_scope
+
+local git_previous_location = '[g'
+local git_next_location = ']g'
+
+local project_dir = '-'
+local project_files = project_files_scope
+local project_buffers = project_buffer_scope
+
+local search_buffer = search_scope('b')
+local search_project = search_scope('p')
+
+local diagnostics_show = diagnostics_show_scope
+local diagnostics_show_all = diagnostics_show_all_scope
+local diagnostics_previous_location = '[e'
+local diagnostics_next_location = ']e'
+
+-- local goto_definition = goto_scope('d')
+-- local goto_declaration = goto_scope('D')
+local goto_implementation = goto_scope('i')
+local goto_references = goto_scope('r')
+
+local completion_enter = '<CR>'
+local completion_previous = '<S-Tab>'
+local completion_next = '<Tab>'
+local completion_complete = "<C-Space>"
+local completion_scroll_docs_down = "<C-d>"
+local completion_scroll_docs_up = "<C-e>"
 
 -- Remap space as leader key
 vim.g.mapleader = ' '
@@ -132,8 +170,8 @@ vim.keymap.set('n', window_close, function() vim.cmd("close") end)
 vim.keymap.set('n', window_close_others, function() vim.cmd("only") end)
 
 -- jumping to previous marks
-vim.keymap.set('n', code_jump_previous_mark, '<C-o>')
-vim.keymap.set('n', code_jump_next_mark, '<C-i>')
+vim.keymap.set('n', code_previous_location, '<C-o>')
+vim.keymap.set('n', code_next_location, '<C-i>')
 
 -- line wrapping helpers
 vim.keymap.set({ 'n', 'v' }, move_up, "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -194,7 +232,8 @@ require("ibl").setup({
 })
 
 -- git signs in the line gutter
-require('gitsigns').setup {
+local gitsigns = require('gitsigns')
+gitsigns.setup {
     signs = {
         add = { text = '+' },
         change = { text = '~' },
@@ -203,14 +242,15 @@ require('gitsigns').setup {
         changedelete = { text = '~' },
     },
     on_attach = function(bufnr)
-        vim.keymap.set('n', '[c', require('gitsigns').prev_hunk, { buffer = bufnr })
-        vim.keymap.set('n', ']c', require('gitsigns').next_hunk, { buffer = bufnr })
+        vim.keymap.set('n', git_previous_location, function() gitsigns.nav_hunk('prev') end, { buffer = bufnr })
+        vim.keymap.set('n', git_next_location, function() gitsigns.nav_hunk('next') end, { buffer = bufnr })
     end,
 }
 
 -- Oil
-require('oil').setup()
-vim.keymap.set('n', '-', function() require('oil').open() end, { desc = 'Open parent directory' })
+local oil = require('oil')
+oil.setup()
+vim.keymap.set('n', project_dir, function() oil.open() end, { desc = 'Open parent directory' })
 
 -- Telescope
 require('telescope').setup {
@@ -224,22 +264,21 @@ require('telescope').setup {
     },
 }
 
--- Enable telescope fzf native
+-- telescope + fzf
 require('telescope').load_extension('fzf')
-
--- Add leader shortcuts
-vim.keymap.set('n', '<leader><space>', function() require('telescope.builtin').buffers { sort_lastused = true } end)
-vim.keymap.set('n', telescope_scope('f'), function() require('telescope.builtin').find_files { previewer = false } end)
-vim.keymap.set('n', telescope_scope('b'), function() require('telescope.builtin').current_buffer_fuzzy_find() end)
-vim.keymap.set('n', telescope_scope('p'), function() require('telescope.builtin').live_grep() end)
+local telescope_builtin = require('telescope.builtin')
+vim.keymap.set('n', project_buffers, function() telescope_builtin.buffers { sort_lastused = true } end)
+vim.keymap.set('n', project_files, function() telescope_builtin.find_files { previewer = true } end)
+vim.keymap.set('n', search_buffer, function() telescope_builtin.current_buffer_fuzzy_find() end)
+vim.keymap.set('n', search_project, function() telescope_builtin.live_grep() end)
 -- vim.keymap.set('n', '<leader>sh', function() require('telescope.builtin').help_tags() end)
 -- vim.keymap.set('n', '<leader>st', function() require('telescope.builtin').tags() end)
 -- vim.keymap.set('n', '<leader>sd', function() require('telescope.builtin').grep_string() end)
 -- vim.keymap.set('n', '<leader>?', function() require('telescope.builtin').oldfiles() end)
 
--- Treesitter configuration
--- Parsers must be installed manually via :TSInstall
-require('nvim-treesitter.configs').setup {
+-- treesitter configuration
+-- (parsers must be installed manually via :TSInstall)
+require('nvim-treesitter.configs').setup({
     highlight = {
         enable = true, -- false will disable the whole extension
     },
@@ -299,47 +338,47 @@ require('nvim-treesitter.configs').setup {
             },
         },
     },
-}
+})
 
--- Diagnostic settings
+-- diagnostic settings
 vim.diagnostic.config {
     virtual_text = true,
     update_in_insert = true,
 }
+vim.keymap.set('n', diagnostics_show, vim.diagnostic.open_float)
+vim.keymap.set('n', diagnostics_previous_location, vim.diagnostic.goto_prev)
+vim.keymap.set('n', diagnostics_next_location, vim.diagnostic.goto_next)
+vim.keymap.set('n', diagnostics_show_all, vim.diagnostic.setloclist)
+-- vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist)
 
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
-vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist)
-
--- LSP settings
-require('mason').setup {}
+-- setup mason
+require('mason').setup()
 require('mason-lspconfig').setup()
 
--- Add nvim-lspconfig plugin
+-- setup nvim-lspconfig
 local lspconfig = require 'lspconfig'
 local function on_attach(_, bufnr)
     local attach_opts = { silent = true, buffer = bufnr }
-    vim.keymap.set({ 'n', 'v' }, goto_scope('d'), vim.lsp.buf.definition, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, goto_scope('D'), vim.lsp.buf.declaration, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, goto_scope('i'), vim.lsp.buf.implementation, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, goto_scope('s'), require('telescope.builtin').lsp_references, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, code_scope('k'), vim.lsp.buf.hover, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, code_scope('K'), vim.lsp.buf.signature_help, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, code_scope('t'), vim.lsp.buf.type_definition, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, code_scope('r'), vim.lsp.buf.rename, attach_opts)
+    -- vim.keymap.set({ 'n', 'v' }, goto_scope('d'), vim.lsp.buf.definition, attach_opts)
+    -- vim.keymap.set({ 'n', 'v' }, goto_scope('D'), vim.lsp.buf.declaration, attach_opts)
+    vim.keymap.set({ 'n', 'v' }, goto_implementation, vim.lsp.buf.implementation, attach_opts)
+    vim.keymap.set({ 'n', 'v' }, goto_references, require('telescope.builtin').lsp_references, attach_opts)
+
+    vim.keymap.set({ 'n', 'v' }, code_hover, vim.lsp.buf.hover, attach_opts)
+    vim.keymap.set({ 'n', 'v' }, code_hover_more_info, vim.lsp.buf.signature_help, attach_opts)
+    vim.keymap.set({ 'n', 'v' }, code_rename, vim.lsp.buf.rename, attach_opts)
+    vim.keymap.set({ 'n', 'v' }, code_format, vim.lsp.buf.format, attach_opts)
+    -- vim.keymap.set({ 'n', 'v' }, code_scope('t'), vim.lsp.buf.type_definition, attach_opts)
+
     -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, attach_opts)
     -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, attach_opts)
     -- vim.keymap.set('n', '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, attach_opts)
 end
 
--- nvim-cmp supports additional completion capabilities
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+-- nvim-cmp additional completion capabilities
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
--- Enable the following language servers
+-- enable language servers
 local servers = { 'clangd', 'rust_analyzer', 'pyright', 'ts_ls', 'taplo' }
 for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
@@ -347,9 +386,6 @@ for _, lsp in ipairs(servers) do
         capabilities = capabilities,
     }
 end
-
-require('neodev').setup {}
-
 lspconfig.lua_ls.setup {
     on_attach = on_attach,
     capabilities = capabilities,
@@ -362,12 +398,14 @@ lspconfig.lua_ls.setup {
     },
 }
 
+-- neovim configuration file lsp
+require('neodev').setup()
+
 -- nvim-cmp setup
 local cmp = require 'cmp'
+
 local luasnip = require 'luasnip'
-
-luasnip.config.setup {}
-
+luasnip.config.setup()
 cmp.setup {
     snippet = {
         expand = function(args)
@@ -375,14 +413,14 @@ cmp.setup {
         end,
     },
     mapping = cmp.mapping.preset.insert {
-        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-e>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete {},
-        ['<CR>'] = cmp.mapping.confirm {
+        [completion_scroll_docs_down] = cmp.mapping.scroll_docs(-4),
+        [completion_scroll_docs_up] = cmp.mapping.scroll_docs(4),
+        [completion_complete] = cmp.mapping.complete {},
+        [completion_enter] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
         },
-        ['<Tab>'] = cmp.mapping(function(fallback)
+        [completion_next] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
             elseif luasnip.expand_or_jumpable() then
@@ -391,7 +429,7 @@ cmp.setup {
                 fallback()
             end
         end, { 'i', 's' }),
-        ['<S-Tab>'] = cmp.mapping(function(fallback)
+        [completion_previous] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
             elseif luasnip.jumpable(-1) then
@@ -406,4 +444,3 @@ cmp.setup {
         { name = 'luasnip' },
     },
 }
-
