@@ -77,7 +77,8 @@ local search_scope = alias('s')
 local project_explorer_scope = alias('x')('')
 local project_explorer_collapsed_scope = alias('c')('')
 local project_files_scope = alias('f')('')
-local project_buffer_scope = alias('<space>')('')
+local buffer_list_buffers_scope = alias('<space>')('')
+local buffer_scope = alias('a')
 local diagnostics_show_scope = alias('e')('')
 local diagnostics_show_all_scope = alias('E')('')
 local hover_scope = alias('k')('')
@@ -123,7 +124,12 @@ local project_dir = '-'
 local project_explorer = project_explorer_scope
 local project_explorer_collapsed = project_explorer_collapsed_scope
 local project_files = project_files_scope
-local project_buffer = project_buffer_scope
+
+local buffer_list_buffers = buffer_list_buffers_scope
+local buffer_close_buffer = buffer_scope('x')
+local buffer_close_buffer_forced = buffer_scope('X')
+local buffer_next_buffer = buffer_scope('l')
+local buffer_previous_buffer = buffer_scope('h')
 
 local search_buffer = search_scope('b')
 local search_project = search_scope('p')
@@ -184,6 +190,12 @@ vim.keymap.set('n', code_next_location, '<C-i>')
 -- line wrapping helpers
 vim.keymap.set({ 'n', 'v' }, move_up, "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set({ 'n', 'v' }, move_down, "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- buffers
+vim.keymap.set('n', buffer_close_buffer, function () vim.cmd('bd') end)
+vim.keymap.set('n', buffer_close_buffer_forced, function () vim.cmd('bd!') end)
+vim.keymap.set('n', buffer_next_buffer, function () vim.cmd('bn') end)
+vim.keymap.set('n', buffer_previous_buffer, function () vim.cmd('bp') end)
 
 -- misc
 vim.opt.tabstop = 4
@@ -293,7 +305,7 @@ require('telescope').setup {
 -- telescope + fzf
 require('telescope').load_extension('fzf')
 local telescope_builtin = require('telescope.builtin')
-vim.keymap.set('n', project_buffer, function() telescope_builtin.buffers { sort_lastused = true } end)
+vim.keymap.set('n', buffer_list_buffers, function() telescope_builtin.buffers { sort_lastused = true } end)
 vim.keymap.set('n', project_files, function() telescope_builtin.find_files { previewer = true } end)
 vim.keymap.set('n', search_buffer, function() telescope_builtin.current_buffer_fuzzy_find() end)
 vim.keymap.set('n', search_project, function() telescope_builtin.live_grep() end)
