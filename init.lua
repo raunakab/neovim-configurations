@@ -75,6 +75,7 @@ end
 local window_scope = alias('w')
 local search_scope = alias('s')
 local project_explorer_scope = alias('x')('')
+local project_explorer_collapsed_scope = alias('c')('')
 local project_files_scope = alias('f')('')
 local project_buffer_scope = alias('<space>')('')
 local diagnostics_show_scope = alias('e')('')
@@ -120,8 +121,9 @@ local git_next_location = ']g'
 
 local project_dir = '-'
 local project_explorer = project_explorer_scope
+local project_explorer_collapsed = project_explorer_collapsed_scope
 local project_files = project_files_scope
-local project_buffers = project_buffer_scope
+local project_buffer = project_buffer_scope
 
 local search_buffer = search_scope('b')
 local search_project = search_scope('p')
@@ -131,10 +133,11 @@ local diagnostics_show_all = diagnostics_show_all_scope
 local diagnostics_previous_location = '[e'
 local diagnostics_next_location = ']e'
 
--- local goto_definition = goto_scope('d')
+-- local goto_implementation = goto_scope('i')
 -- local goto_declaration = goto_scope('D')
-local goto_implementation = goto_scope('i')
+local goto_definition = goto_scope('d')
 local goto_references = goto_scope('r')
+local goto_symbols = goto_scope('s')
 
 local completion_enter = '<CR>'
 local completion_previous = '<S-Tab>'
@@ -233,6 +236,7 @@ require('nvim-tree').setup({
     },
 })
 vim.keymap.set({ 'n', 'v' }, project_explorer, function() vim.cmd('NvimTreeToggle') end)
+vim.keymap.set({ 'n', 'v' }, project_explorer_collapsed, function() vim.cmd('NvimTreeCollapse') end)
 
 -- statusbar
 require('lualine').setup {
@@ -289,7 +293,7 @@ require('telescope').setup {
 -- telescope + fzf
 require('telescope').load_extension('fzf')
 local telescope_builtin = require('telescope.builtin')
-vim.keymap.set('n', project_buffers, function() telescope_builtin.buffers { sort_lastused = true } end)
+vim.keymap.set('n', project_buffer, function() telescope_builtin.buffers { sort_lastused = true } end)
 vim.keymap.set('n', project_files, function() telescope_builtin.find_files { previewer = true } end)
 vim.keymap.set('n', search_buffer, function() telescope_builtin.current_buffer_fuzzy_find() end)
 vim.keymap.set('n', search_project, function() telescope_builtin.live_grep() end)
@@ -381,10 +385,11 @@ require('mason-lspconfig').setup()
 local lspconfig = require 'lspconfig'
 local function on_attach(_, bufnr)
     local attach_opts = { silent = true, buffer = bufnr }
-    -- vim.keymap.set({ 'n', 'v' }, goto_scope('d'), vim.lsp.buf.definition, attach_opts)
+    -- vim.keymap.set({ 'n', 'v' }, goto_scope('i'), vim.lsp.buf.implementation, attach_opts)
     -- vim.keymap.set({ 'n', 'v' }, goto_scope('D'), vim.lsp.buf.declaration, attach_opts)
-    vim.keymap.set({ 'n', 'v' }, goto_implementation, vim.lsp.buf.implementation, attach_opts)
+    vim.keymap.set({ 'n', 'v' }, goto_definition, vim.lsp.buf.definition, attach_opts)
     vim.keymap.set({ 'n', 'v' }, goto_references, require('telescope.builtin').lsp_references, attach_opts)
+    vim.keymap.set({ 'n', 'v' }, goto_symbols, require('telescope.builtin').lsp_document_symbols, attach_opts)
 
     vim.keymap.set({ 'n', 'v' }, code_hover, vim.lsp.buf.hover, attach_opts)
     vim.keymap.set({ 'n', 'v' }, code_hover_more_info, vim.lsp.buf.signature_help, attach_opts)
