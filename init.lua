@@ -7,6 +7,9 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Add plugins
 require('lazy').setup({
+    -- File tree
+    'nvim-tree/nvim-tree.lua',
+
     -- Git commands in nvim
     'tpope/vim-fugitive',
 
@@ -71,6 +74,7 @@ local function alias(scope)
 end
 local window_scope = alias('w')
 local search_scope = alias('s')
+local project_explorer_scope = alias('x')('')
 local project_files_scope = alias('f')('')
 local project_buffer_scope = alias('<space>')('')
 local diagnostics_show_scope = alias('e')('')
@@ -115,6 +119,7 @@ local git_previous_location = '[g'
 local git_next_location = ']g'
 
 local project_dir = '-'
+local project_explorer = project_explorer_scope
 local project_files = project_files_scope
 local project_buffers = project_buffer_scope
 
@@ -211,6 +216,23 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- plugin configurations
+
+-- file tree
+require('nvim-tree').setup({
+    sort = {
+        sorter = "case_sensitive",
+    },
+    view = {
+        width = 30,
+    },
+    renderer = {
+        group_empty = true,
+    },
+    filters = {
+        dotfiles = true,
+    },
+})
+vim.keymap.set({ 'n', 'v' }, project_explorer, function() vim.cmd('NvimTreeToggle') end)
 
 -- statusbar
 require('lualine').setup {
