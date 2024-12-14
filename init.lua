@@ -386,6 +386,9 @@ for _, lsp in ipairs(servers) do
         capabilities = capabilities,
     }
 end
+
+-- neovim configuration file lsp
+require('neodev').setup()
 lspconfig.lua_ls.setup {
     on_attach = on_attach,
     capabilities = capabilities,
@@ -397,9 +400,6 @@ lspconfig.lua_ls.setup {
         },
     },
 }
-
--- neovim configuration file lsp
-require('neodev').setup()
 
 -- nvim-cmp setup
 local cmp = require 'cmp'
