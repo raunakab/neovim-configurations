@@ -83,6 +83,9 @@ require('lazy').setup({
 
     -- pretty line folding
     'anuvyklack/pretty-fold.nvim',
+
+    -- token illumination
+    'RRethy/vim-illuminate',
 }, {})
 
 -- remap utils
@@ -541,3 +544,12 @@ cmp.setup {
         { name = 'luasnip' },
     },
 }
+
+require('illuminate').configure({
+    should_enable = function(_)
+        local mode = vim.api.nvim_get_mode().mode
+        return mode == "n"
+    end,
+})
+
+vim.api.nvim_set_hl(0, "Visual", { bg = "#884444", fg = "NONE" })
