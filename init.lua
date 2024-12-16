@@ -74,28 +74,41 @@ require('lazy').setup({
         -- NOTE: If you have trouble with this installation, refer to the README for telescope-fzf-native.
         build = 'make',
     },
+
+    -- line folding (with lsp integrations)
+    {
+        'kevinhwang91/nvim-ufo',
+        dependencies = { 'kevinhwang91/promise-async' },
+    },
+
+    -- pretty line folding
+    'anuvyklack/pretty-fold.nvim',
 }, {})
 
 -- remap utils
-local function alias(scope)
-    local scoped = string.format("<leader>%s", scope)
+local function with_leader_and_prefix(prefix)
+    local scoped = string.format("<leader>%s", prefix)
     return function(command) return string.format("%s%s", scoped, command) end
 end
-local window_scope = alias('w')
-local search_scope = alias('s')
-local project_explorer_scope = alias('x')('')
-local project_explorer_collapsed_scope = alias('c')('')
-local project_files_scope = alias('f')('')
-local project_git_files_scope = alias('g')('')
-local buffer_list_buffers_scope = alias('<space>')('')
-local buffer_scope = alias('b')
-local diagnostics_show_scope = alias('e')('')
-local diagnostics_show_all_scope = alias('E')('')
-local hover_scope = alias('k')('')
-local hover_more_info_scope = alias('K')('')
-local rename_scope = alias('r')('')
-local code_format_scope = alias('m')('')
-local function goto_scope(scope) return string.format("g%s", scope) end
+local function with_prefix(prefix)
+    return function(command) return string.format("%s%s", prefix, command) end
+end
+local window_scope = with_leader_and_prefix('w')
+local search_scope = with_leader_and_prefix('s')
+local project_explorer_scope = with_leader_and_prefix('x')('')
+local project_explorer_collapsed_scope = with_leader_and_prefix('c')('')
+local project_files_scope = with_leader_and_prefix('f')('')
+local project_git_files_scope = with_leader_and_prefix('g')('')
+local buffer_list_buffers_scope = with_leader_and_prefix('<space>')('')
+local buffer_scope = with_leader_and_prefix('b')
+local diagnostics_show_scope = with_leader_and_prefix('e')('')
+local diagnostics_show_all_scope = with_leader_and_prefix('E')('')
+local hover_scope = with_leader_and_prefix('k')('')
+local hover_more_info_scope = with_leader_and_prefix('K')('')
+local rename_scope = with_leader_and_prefix('r')('')
+local code_format_scope = with_leader_and_prefix('m')('')
+local folding_scope = with_prefix('z')
+local goto_scope = with_prefix('g')
 
 local move_up = 'k'
 local move_down = 'j'
@@ -163,10 +176,20 @@ local completion_complete = "<C-Space>"
 local completion_scroll_docs_down = "<C-d>"
 local completion_scroll_docs_up = "<C-e>"
 
+local folding_close_all = folding_scope('C')
+local folding_open_all = folding_scope('O')
+
 -- Remap space as leader key
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>')
+
+-- folding
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldcolumn = "1"
+vim.keymap.set({ 'n', 'v' }, folding_close_all, 'zM')
+vim.keymap.set({ 'n', 'v' }, folding_open_all, 'zR')
 
 -- basic movements
 vim.keymap.set({ 'n', 'v' }, move_far_left, '^')
@@ -254,9 +277,6 @@ require('nvim-tree').setup({
     renderer = {
         group_empty = true,
     },
-    filters = {
-        dotfiles = true,
-    },
 })
 vim.keymap.set({ 'n', 'v' }, project_explorer, function() vim.cmd('NvimTreeToggle') end)
 vim.keymap.set({ 'n', 'v' }, project_explorer_collapsed, function() vim.cmd('NvimTreeCollapse') end)
@@ -307,9 +327,13 @@ gitsigns.setup {
     end,
 }
 
--- Oil
+-- oil
 local oil = require('oil')
-oil.setup()
+oil.setup({
+    view_options = {
+        show_hidden = true,
+    }
+})
 vim.keymap.set('n', project_dir, function() oil.open() end, { desc = 'Open parent directory' })
 
 -- Telescope
@@ -444,8 +468,15 @@ end
 
 -- nvim-cmp additional completion capabilities
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true
+}
+require('ufo').setup()
 
 -- enable language servers
+-- if you want to see what servers are installed, try looking in these dirs:
+-- * `~/.local/share/nvim/mason/bin`
 local servers = { 'clangd', 'rust_analyzer', 'pyright', 'ts_ls', 'taplo', 'yamlls', 'ruff' }
 for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
