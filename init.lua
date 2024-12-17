@@ -377,6 +377,12 @@ require('telescope').setup {
             },
         },
     },
+    pickers = {
+        find_files = {
+            -- add "--no-ignore" if you want to include files that are ignored (via .gitignore or .rgignore)
+            find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+        },
+    },
 }
 
 -- telescope + fzf
