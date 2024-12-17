@@ -89,6 +89,9 @@ require('lazy').setup({
 
     -- undo tree
     'mbbill/undotree',
+
+    -- inline git blame
+    'f-person/git-blame.nvim',
 }, {})
 
 -- remap utils
@@ -563,3 +566,5 @@ require('illuminate').configure({
 })
 
 vim.api.nvim_set_hl(0, "Visual", { bg = "#884444", fg = "NONE" })
+
+require('gitblame').setup()
