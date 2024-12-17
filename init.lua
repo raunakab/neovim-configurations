@@ -86,6 +86,9 @@ require('lazy').setup({
 
     -- token illumination
     'RRethy/vim-illuminate',
+
+    -- undo tree
+    'mbbill/undotree',
 }, {})
 
 -- remap utils
@@ -112,6 +115,7 @@ local rename_scope = with_leader_and_prefix('r')('')
 local code_format_scope = with_leader_and_prefix('m')('')
 local folding_scope = with_prefix('z')
 local goto_scope = with_prefix('g')
+local undo_toggle_view_scope = with_leader_and_prefix('u')('')
 
 local move_up = 'k'
 local move_down = 'j'
@@ -182,6 +186,8 @@ local completion_scroll_docs_up = "<C-e>"
 local folding_close_all = folding_scope('C')
 local folding_open_all = folding_scope('O')
 
+local undo_toggle_view = undo_toggle_view_scope
+
 -- Remap space as leader key
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -233,6 +239,10 @@ vim.keymap.set('n', buffer_close_buffer, function() vim.cmd('bd') end)
 vim.keymap.set('n', buffer_close_buffer_forced, function() vim.cmd('bd!') end)
 vim.keymap.set('n', buffer_next_buffer, function() vim.cmd('bn') end)
 vim.keymap.set('n', buffer_previous_buffer, function() vim.cmd('bp') end)
+
+-- undo
+vim.keymap.set('n', 'U', '<C-r>')
+vim.keymap.set('n', undo_toggle_view, function() vim.cmd('UndotreeToggle') end)
 
 -- misc
 vim.opt.tabstop = 4
