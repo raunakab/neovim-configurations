@@ -305,6 +305,9 @@ require('nvim-tree').setup({
     renderer = {
         group_empty = true,
     },
+    git = {
+        ignore = false,
+    },
 })
 vim.keymap.set({ 'n', 'v' }, project_explorer, function() vim.cmd('NvimTreeToggle') end)
 vim.keymap.set({ 'n', 'v' }, project_explorer_collapsed, function() vim.cmd('NvimTreeCollapse') end)
