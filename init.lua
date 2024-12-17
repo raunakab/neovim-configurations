@@ -194,6 +194,8 @@ local folding_open_all = folding_scope('O')
 local undo_reundo = 'U'
 local undo_toggle_view = undo_toggle_view_scope
 
+local yank_to_clipboard = 'Y'
+
 -- Remap space as leader key
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -253,6 +255,9 @@ vim.keymap.set('n', buffer_previous_buffer, function() vim.cmd('bp') end)
 -- undo
 vim.keymap.set('n', undo_toggle_view, function() vim.cmd('UndotreeToggle') end)
 vim.keymap.set('n', undo_reundo, '<C-r>')
+
+-- yanking to clipboard
+vim.keymap.set({ 'n', 'v' }, yank_to_clipboard, '"+y')
 
 -- misc
 vim.opt.tabstop = 4
