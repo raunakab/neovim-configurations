@@ -121,7 +121,9 @@ local goto_scope = with_prefix('g')
 local undo_toggle_view_scope = with_leader_and_prefix('u')('')
 
 local move_up = 'k'
+local move_far_up = 'K'
 local move_down = 'j'
+local move_far_down = 'J'
 local move_far_left = "H"
 local move_far_right = "L"
 local move_file_top = "{"
@@ -189,6 +191,7 @@ local completion_scroll_docs_up = "<C-e>"
 local folding_close_all = folding_scope('C')
 local folding_open_all = folding_scope('O')
 
+local undo_reundo = 'U'
 local undo_toggle_view = undo_toggle_view_scope
 
 -- Remap space as leader key
@@ -210,6 +213,10 @@ vim.keymap.set('v', move_far_right, '$h')
 vim.keymap.set({ 'n', 'v' }, move_file_top, 'gg')
 vim.keymap.set({ 'n', 'v' }, move_file_bottom, 'G')
 vim.keymap.set({ 'n', 'v' }, move_matching, '%')
+
+-- moving code
+vim.keymap.set('v', move_far_up, ":m '<-2<CR>gv=gv")
+vim.keymap.set('v', move_far_down, ":m '>+1<CR>gv=gv")
 
 -- scrolling
 vim.keymap.set({ 'n', 'v' }, scroll_up, '<C-e>')
@@ -244,8 +251,8 @@ vim.keymap.set('n', buffer_next_buffer, function() vim.cmd('bn') end)
 vim.keymap.set('n', buffer_previous_buffer, function() vim.cmd('bp') end)
 
 -- undo
-vim.keymap.set('n', 'U', '<C-r>')
 vim.keymap.set('n', undo_toggle_view, function() vim.cmd('UndotreeToggle') end)
+vim.keymap.set('n', undo_reundo, '<C-r>')
 
 -- misc
 vim.opt.tabstop = 4
